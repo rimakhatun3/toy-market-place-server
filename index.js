@@ -47,6 +47,14 @@ app.get('/alltoys',async(req,res)=>{
     res.send(result)
 })
 
+app.get('/alltoys/:text',async(req,res)=>{
+    const text = req.params.text;
+    const filter = {category:text}
+    const result = await toyCollection.find(filter).toArray()
+    res.send(result)
+
+})
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
