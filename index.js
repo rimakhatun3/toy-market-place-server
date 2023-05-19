@@ -67,7 +67,7 @@ app.get('/alltoys/:text',async(req,res)=>{
 // })
 
 
-app.get('/alltoys/:id',async(req,res)=>{
+app.get('/alltoy/:id',async(req,res)=>{
   const id = req.params.id
   console.log(id)
   const query ={_id : new ObjectId(id)}
@@ -75,6 +75,23 @@ const result = await toyCollection.findOne(query)
 console.log(result)
 res.send(result)
 
+})
+
+app.get('/toys/:email',async(req,res)=>{
+  let query = {}
+  if(req.params.email){
+    query = {sellerEmail:req.params.email}
+  }
+  console.log(query)
+  const result = await toyCollection.find(query).toArray()
+  res.send(result)
+})
+
+app.delete('/mytoys/:id',async(req,res)=>{
+  const id = req.params.id;
+  const query = {_id : new ObjectId(id)}
+  const result = await toyCollection.deleteOne(query)
+  res.send(result)
 })
 
     await client.db("admin").command({ ping: 1 });
