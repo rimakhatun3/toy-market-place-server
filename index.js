@@ -43,7 +43,7 @@ app.post('/alltoys',async(req,res)=>{
 })
 
 app.get('/alltoys',async(req,res)=>{
-    const result =await toyCollection.find().toArray()
+    const result =await toyCollection.find().limit(5).toArray()
     res.send(result)
 })
 
@@ -66,13 +66,17 @@ res.send(result)
 
 })
 
-app.get('/toys/:email',async(req,res)=>{
+app.get('/toys',async(req,res)=>{
+
+  const type = req.query.type
+  const value = req.query.value
+
   let query = {}
-  if(req.params.email){
-    query = {sellerEmail:req.params.email}
+  if(req.query.email){
+    query = {sellerEmail:req.query.email}
   }
   
-  const result = await toyCollection.find(query).toArray()
+  const result = await toyCollection.find(query).sort(parse({price:-1})).toArray()
   res.send(result)
 })
 
