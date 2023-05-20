@@ -87,6 +87,24 @@ app.get('/toys/:email',async(req,res)=>{
   res.send(result)
 })
 
+app.patch('/mytoy/:id',async(req,res)=>{
+  const id = req.params.id
+  const filter = {_id : new ObjectId(id)}
+  const newUpdate = req.body
+  const updateDoc ={
+    $set:{
+    price: newUpdate.price,
+    detail :newUpdate.detail,
+    quantity : newUpdate.quantity
+    }
+  }
+
+  const result = await toyCollection.updateOne(filter,updateDoc)
+  res.send(result)
+  
+})
+
+
 app.delete('/mytoys/:id',async(req,res)=>{
   const id = req.params.id;
   const query = {_id : new ObjectId(id)}
