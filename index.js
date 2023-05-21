@@ -34,10 +34,15 @@ async function run() {
     // Send a ping to confirm a successful connection
 const toyCollection  = client.db('toyMarketplace').collection('toys')
 
+const indexKeys = {category:1, sellerName:1}
+const indexOptions = {name:"sellerCategory"}
+const result = await toyCollection.createIndex(indexKeys,indexOptions)
+console.log(result)
+
+
 
 app.post('/alltoys',async(req,res)=>{
     const body = req.body
-    console.log(body)
     const result = await toyCollection.insertOne(body)
     res.send(result)
 })
@@ -47,7 +52,7 @@ app.get('/alltoys',async(req,res)=>{
     res.send(result)
 })
 
-app.get('/alltoys/:text',async(req,res)=>{
+app.get('/all/:text',async(req,res)=>{
     const text = req.params.text;
     const filter = {category:text}
     const result = await toyCollection.find(filter).toArray()
@@ -58,27 +63,37 @@ app.get('/alltoys/:text',async(req,res)=>{
 
 app.get('/alltoy/:id',async(req,res)=>{
   const id = req.params.id
-
   const query ={_id : new ObjectId(id)}
 const result = await toyCollection.findOne(query)
-console.log(result)
 res.send(result)
 
 })
 
 app.get('/toys',async(req,res)=>{
-
-  const type = req.query.type
-  const value = req.query.value
-  console.log(type,value)
-
   let query = {}
-  if(req.query.email){
+  if(req.query?.email){
     query = {sellerEmail:req.query.email}
   }
   const result = await toyCollection.find(query).sort({price : 1}).toArray()
-  console.log(result)
   res.send(result)
+})
+
+
+app.get('/searchByText/:text',async(req,res)=>{
+const searchText = req.params.text;
+const result = await toyCollection.find({
+  $or:[
+    {
+      name:{$regex: searchText , $options:'i'}
+    },
+    {
+      sellerName:{$regex: searchText, $options:"i"}
+    }
+  ]
+}).toArray()
+res.send(result)
+console.log(result)
+
 })
 
 app.patch('/mytoy/:id',async(req,res)=>{
